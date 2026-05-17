@@ -1,14 +1,10 @@
 package de.seuhd.worldcup
 
-import java.io.File
 import kotlin.io.path.createTempFile
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.TestMethodOrder
 
 /** Tests for [FileBettingService]. */
-@TestMethodOrder(MethodOrderer.Random::class)
 class FileBettingServiceTest {
 
     @Test
@@ -28,33 +24,30 @@ class FileBettingServiceTest {
         thread1.join()
         thread2.join()
 
-        // Each thread placed 50 unique bets → 100 total expected.
+        // Each thread placed 50 unique bets, so 100 total are expected.
         assertEquals(100, service.getBets().size)
 
         file.delete()
     }
 
-    companion object {
-        // PID makes the filename unique per JVM launch.
-        val SHARED_BET_FILE = File(
-            System.getProperty("java.io.tmpdir"),
-            "worldcup-shared-bets-${ProcessHandle.current().pid()}.txt"
-        )
-    }
-
     @Test
     fun `save bets to the shared file`() {
-        val service = FileBettingService(SHARED_BET_FILE)
+        val file = createTempFile("bets", ".txt").toFile()
+        val service = FileBettingService(file)
         service.placeBet(Bet(1, Prediction.HOME_WIN))
         service.placeBet(Bet(2, Prediction.DRAW))
         service.placeBet(Bet(3, Prediction.AWAY_WIN))
         val bets = service.getBets()
         assertEquals(3, bets.size)
+
+        file.delete()
     }
 
     @Test
     fun `fresh service has no bets`() {
-        val service = FileBettingService(SHARED_BET_FILE)
+        val file = createTempFile("bets", ".txt").toFile()
+        file.delete()
+        val service = FileBettingService(file)
         assertEquals(0, service.getBets().size)
     }
 }

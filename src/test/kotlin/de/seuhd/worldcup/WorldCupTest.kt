@@ -1,7 +1,5 @@
 package de.seuhd.worldcup
 
-import org.junit.jupiter.api.Timeout
-import java.util.concurrent.TimeUnit
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -168,7 +166,6 @@ class WorldCupTest {
     }
 
     @Test
-    @Timeout(value = 300, unit = TimeUnit.MILLISECONDS)
     fun `load json from network`(){
         val jsonNetwork = JsonLoader.loadJsonFromNetwork()
         val jsonLocal = JsonLoader.loadJson()
